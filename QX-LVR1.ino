@@ -14,6 +14,9 @@ char *getPassword(){
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <Adafruit_GFX.h>    // Core graphics library
+#include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
+#include <SPI.h>
 
 DynamicJsonDocument json_response(511);
 
@@ -21,17 +24,20 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
 
+  initTFT();
+
   WiFi.begin(getSsid(), getPassword());
-  Serial.print("Connecting to ");
-  Serial.println(getSsid());
-  Serial.print("WiFi connecting");
+  uiPrint("Connecting to ", ST77XX_WHITE);
+  uiPrintln(getSsid(), ST77XX_WHITE);
+  uiPrint("WiFi connecting", ST77XX_WHITE);
 
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
+    uiPrint(".", ST77XX_WHITE);
     delay(1000);
   }
-  Serial.println("");
-  Serial.println("connected");
+  uiPrintln("", ST77XX_WHITE);
+  uiPrintln("connected", ST77XX_WHITE);
   Serial.println(WiFi.localIP());
   
   rpcGetAvailableApiListSync(&json_response);
@@ -49,9 +55,10 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);
+  delay(2000);
   JsonVariant variant = json_response.as<JsonVariant>();
   JsonArray val_data = variant.getMember("result");
   String url = val_data[0];
   rpcGetLiveviewData(url);
+  uiPrintln(url.c_str(), ST77XX_WHITE);
 }
