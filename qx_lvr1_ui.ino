@@ -3,6 +3,9 @@
 #define TFT_RST        22 // Or set to -1 and connect to Arduino RESET pin
 #define TFT_DC         17
 
+#define ST7735_LIGHTGREY   0xC618      /* 192, 192, 192 */
+#define ST7735_DARKGREY    0x7BEF      /* 128, 128, 128 */
+
 // For 1.8" TFT with ST7735 use:
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
@@ -31,6 +34,22 @@ void uiPrint(const char *text, uint16_t color) {
   tft.setTextWrap(true);
   tft.print(text);
   Serial.print(text);
+}
+
+void uiLoadingScreen() {
+  int16_t start_ind = (millis()/200)%4;
+  const int box_scale = 20;
+  const int box_offset = 3;
+  int x_ind[4] = {box_scale+box_offset,box_scale+box_offset,-1-box_offset,-1-box_offset};
+  int y_ind[4] = {box_scale+box_offset,-1-box_offset,-1-box_offset,box_scale+box_offset};
+  tft.fillRect(tft.width()/2 -1*x_ind[start_ind%4], tft.height()/2 -1*y_ind[start_ind%4], box_scale, box_scale, ST77XX_BLACK);
+  tft.fillRect(tft.width()/2 -1*x_ind[(start_ind+1)%4], tft.height()/2 -1*y_ind[(start_ind+1)%4], box_scale, box_scale, ST7735_DARKGREY);
+  tft.fillRect(tft.width()/2 -1*x_ind[(start_ind+2)%4], tft.height()/2 -1*y_ind[(start_ind+2)%4], box_scale, box_scale, ST7735_LIGHTGREY);
+  tft.fillRect(tft.width()/2 -1*x_ind[(start_ind+3)%4], tft.height()/2 -1*y_ind[(start_ind+3)%4], box_scale, box_scale, ST77XX_WHITE);
+}
+
+void uiClearAll() {
+  tft.fillScreen(ST77XX_BLACK);
 }
 
 void testlines(uint16_t color) {
@@ -73,13 +92,6 @@ void testlines(uint16_t color) {
     tft.drawLine(tft.width()-1, tft.height()-1, 0, y, color);
     delay(0);
   }
-}
-
-void testdrawtext(const char *text, uint16_t color) {
-  tft.setCursor(0, 0);
-  tft.setTextColor(color);
-  tft.setTextWrap(true);
-  tft.print(text);
 }
 
 void testfastlines(uint16_t color1, uint16_t color2) {

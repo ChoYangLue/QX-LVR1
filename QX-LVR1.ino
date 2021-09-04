@@ -21,15 +21,15 @@ char *getPassword(){
 DynamicJsonDocument json_response(511);
 
 void connectCamera(const char *ssid, const char *password) {
+  uiClearAll();
   WiFi.begin(ssid, password);
   uiPrint("Connecting to ", ST77XX_WHITE);
   uiPrintln(getSsid(), ST77XX_WHITE);
   uiPrint("WiFi connecting", ST77XX_WHITE);
 
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    uiPrint(".", ST77XX_WHITE);
-    delay(1000);
+    uiLoadingScreen();
+    delay(200);
   }
   
   uiPrintln("", ST77XX_WHITE);
@@ -59,6 +59,7 @@ void setup() {
 }
 
 void loop() {
+  if (WiFi.status() != WL_CONNECTED) connectCamera(getSsid(), getPassword());
   delay(2000);
   JsonVariant variant = json_response.as<JsonVariant>();
   JsonArray val_data = variant.getMember("result");
