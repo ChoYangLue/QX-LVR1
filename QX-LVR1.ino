@@ -20,13 +20,8 @@ char *getPassword(){
 
 DynamicJsonDocument json_response(511);
 
-void setup() {
-  Serial.begin(115200);
-  while (!Serial);
-
-  initTFT();
-
-  WiFi.begin(getSsid(), getPassword());
+void connectCamera(const char *ssid, const char *password) {
+  WiFi.begin(ssid, password);
   uiPrint("Connecting to ", ST77XX_WHITE);
   uiPrintln(getSsid(), ST77XX_WHITE);
   uiPrint("WiFi connecting", ST77XX_WHITE);
@@ -36,9 +31,18 @@ void setup() {
     uiPrint(".", ST77XX_WHITE);
     delay(1000);
   }
+  
   uiPrintln("", ST77XX_WHITE);
   uiPrintln("connected", ST77XX_WHITE);
   Serial.println(WiFi.localIP());
+}
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial);
+
+  initTFT();
+  connectCamera(getSsid(), getPassword());
   
   rpcGetAvailableApiListSync(&json_response);
   serializeJson(json_response, Serial);

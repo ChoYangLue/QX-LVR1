@@ -1,5 +1,3 @@
-
-
 int rpcPostJson(char *buffer, DynamicJsonDocument *result) {
   if (buffer == NULL || result == NULL) return -1;
   HTTPClient http;
