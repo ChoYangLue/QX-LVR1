@@ -33,7 +33,9 @@ void connectCamera(const char *ssid, const char *password) {
   }
   
   uiPrintln("", ST77XX_WHITE);
-  uiPrintln("connected", ST77XX_WHITE);
+  uiClearAll();
+  uiPrint("connected ", ST77XX_WHITE);
+  uiPrintln(getSsid(), ST77XX_WHITE);
   Serial.println(WiFi.localIP());
 }
 
@@ -60,10 +62,11 @@ void setup() {
 
 void loop() {
   if (WiFi.status() != WL_CONNECTED) connectCamera(getSsid(), getPassword());
-  delay(2000);
+  
   JsonVariant variant = json_response.as<JsonVariant>();
   JsonArray val_data = variant.getMember("result");
   String url = val_data[0];
   rpcGetLiveviewData(url);
-  uiPrintln(url.c_str(), ST77XX_WHITE);
+  //uiPrintln(url.c_str(), ST77XX_WHITE);
+  delay(5000);
 }

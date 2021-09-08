@@ -26,7 +26,7 @@ int rpcGetLiveviewData(String host) {
     return status_code;
   }
   String body = http.getString();
-  Serial.println(body);
+  readHeader(&body);
   http.end();
   return status_code;
 }
